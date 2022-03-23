@@ -18,7 +18,7 @@
                         </div>
                         <div class="card-body text-center">
                             <span v-if="show" class="fs-1">
-                                {{ room["data"][self.user_id] }}
+                                {{ emots[room["data"][self.user_id]] }}
                             </span>
                             <span v-else class="fs-1">
                                 🤔
@@ -37,7 +37,7 @@
                         </div>
                         <div class="card-body text-center">
                             <span v-if="show" class="fs-1">
-                                {{ room["data"][getOpponent['user_id']] }}
+                                {{ emots[room["data"][getOpponent['user_id']]] }}
                             </span>
                             <span v-else class="fs-1">
                                 🤔
@@ -94,17 +94,21 @@ export default {
             this.player = false;
         },
         room_joined(data){
+
+            this.$swal.fire
+
             this.player = true;
             this.room_name = data.room_name;
             this.user_count = data.room.users_count;
             this.room = data.room;
-            console.log(this.user_count);
+            this.data_count = this.room.data_count;
             if(this.user_count >= 2){
                 this.ready = true;
             }
         },
         new_data(data){
             this.room = data;
+            this.data_count = this.room.data_count;
             console.log(this.room);
             if(this.room.data_count == 2){
                 this.show = true;
@@ -167,6 +171,15 @@ export default {
     },
     methods:{
         pick(value){
+            if(this.room['data_count'] == 2){
+                var self_data = this.room['data'][this.self.userId];
+                var opponent_data = this.room['data'][this.getOpponent.userId];
+                console.log({
+                    self_data,
+                    opponent_data
+                });
+            }
+
             if(this.ready){
                 this.$socket.emit('picked',{
                     room_id:this.room_id,
@@ -192,10 +205,16 @@ export default {
             user_count : 0,
             username:'',
             room : {},
+            data_count :null,
             self : null,
             opponent : {},
             ready : false,
             show : false,
+            emots:{
+                "rock":"✊",
+                "paper":"🖐",
+                "cissor":"🤞"
+            },
         }
     },
 }

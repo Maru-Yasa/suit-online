@@ -4,7 +4,7 @@
     <div class="row justify-content-center">
 
       <div class="col-10 text-center">
-        <h1 class="text-success">SUIT ONLINE</h1>
+        <h1 class="text-success">SUIT ONLINE {{ $store.state.test }}</h1>
       </div>
 
       <div class="col-10">

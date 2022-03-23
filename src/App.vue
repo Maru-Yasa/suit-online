@@ -18,12 +18,12 @@ export default {
 <style>
 
 .my-gray{
-  background-color: #EFEFEF;
-  text-decoration: none;
+  background-color: #EFEFEF !important;
 }
 
 .card-hover{
-  border-color: #EFEFEF;
+  border-color: #EFEFEF !important;
+  text-decoration: none;
 }
 
 .card-hover:hover{
