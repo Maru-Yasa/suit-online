@@ -1,5 +1,7 @@
 # suit-online
 
+server : https://github.com/maru-yasa/suit-online-server
+
 ## Project setup
 ```
 npm install
