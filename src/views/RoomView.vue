@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="">
 
         <div class="row justify-content-center">
 
@@ -8,9 +8,11 @@
             </div>
 
             <div class="col-12 col-md-6 mt-5 mb-5 row justify-content-center">
-                <div class="col-4 mx-4 text-center p-0">
+                <div class="col-5 mx-2 text-center p-0">
                     <div class="mb-2">
                         status : {{ room['users'][self.user_id]['status'] }}
+                        <br>
+                        score  : {{ room['users'][self.user_id]['score'] }}
                     </div>
                     <div class="card my-gray text-secondary rounded-lg col-12 border-0 p-3">
                         <div class="card-title text-center">
@@ -26,10 +28,11 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-4 mx-4 text-center p-0">
+                <div class="col-5 mx-2 text-center p-0">
                     <div class="mb-2">
                         status : {{ getOpponent.status }}
+                        <br>
+                        score  : {{ getOpponent.score }}
                     </div>                    
                     <div class="card my-gray text-secondary rounded-lg col-12 border-0 p-3">
                         <div class="card-title text-center">
@@ -38,6 +41,7 @@
                         <div class="card-body text-center">
                             <span v-if="show" class="fs-1">
                                 {{ emots[room["data"][getOpponent['user_id']]] }}
+
                             </span>
                             <span v-else class="fs-1">
                                 🤔
@@ -109,15 +113,32 @@ export default {
         new_data(data){
             this.room = data;
             this.data_count = this.room.data_count;
-            console.log(this.room);
             if(this.room.data_count == 2){
                 this.show = true;
+                this.judge(this.room.data);
             }
         },
         self(data){
             this.self = data;
         },
-
+        log_join(username){
+            this.$swal.fire({
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2500,
+                    icon : "info",
+                    title : `${username} has joined`
+            });
+        },
+        log_disconnect(username){
+            this.$swal.fire({
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2500,
+                    icon : "info",
+                    title : `${username} has disconnected`
+            });         
+        }
     },
     computed : {
         getOpponent(){
@@ -140,8 +161,9 @@ export default {
         }
     },
     mounted(){
-        if (this.$route.query.username) {
-            this.username = this.$route.query.username;
+        if (this.$store.state.username != '') {
+            this.username = this.$store.state.username;
+            this.$store.commit('deleteUsername');
             var data = {
                 room_id:this.room_id,
             };
@@ -149,8 +171,11 @@ export default {
         }else{
             this.$swal.fire({
                 title: 'Create username',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showDenyButton: true,
                 html: `<input type="text" id="username" class="swal2-input" placeholder="Username">`,
-                confirmButtonText: 'Sign in',
+                confirmButtonText: 'Join',
                 focusConfirm: false,
                 preConfirm: () => {
                     const username = this.$swal.getPopup().querySelector('#username').value
@@ -195,6 +220,87 @@ export default {
                 });            
             }
 
+        },
+        judge(data){
+            console.log(data);
+            var self = this.self;
+            var opponent = this.getOpponent;
+            var win = null;
+            self.data = data[self.user_id];
+            opponent.data = data[opponent.user_id];
+
+            if (self.data == 'rock') {
+                if(opponent.data == 'paper'){
+                    win = false;
+                }else if(opponent.data == "cissor"){
+                    win = true
+                }else{
+                    win = 'tie';
+                }
+            }else if(self.data == 'paper'){
+                if(opponent.data == 'cissor'){
+                    win = false;
+                }else if(opponent.data == "rock"){
+                    win = true
+                }else{
+                    win = 'tie';
+                }
+            }else if(self.data == 'cissor'){
+                if(opponent.data == 'rock'){
+                    win = false;
+                }else if(opponent.data == "paper"){
+                    win = true
+                }else{
+                    win = 'tie';
+                } 
+            }
+
+            if(win == true){
+                this.$swal.fire({
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    icon : "success",
+                    title : `You win 🥳 (${this.getData(this.self.user_id)} vs ${this.getData(this.getOpponent.user_id)})`
+                });
+                this.$socket.emit('win', this.room_id);
+                setTimeout(this.restartWinner, 5000);
+            }
+            else if (win == false){
+                this.$swal.fire({
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    icon : "error",
+                    title : `You lose 😜 (${this.getData(this.self.user_id)} vs ${this.getData(this.getOpponent.user_id)})`
+                });
+                this.$socket.emit('lose', this.room_id);
+                setTimeout(this.restartLoser, 5000);
+            }
+            else if (win == 'tie'){
+                this.$swal.fire({
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    icon : "info",
+                    title : `Tie (${this.getData(this.self.user_id)} vs ${this.getData(this.getOpponent.user_id)})`
+                });
+                this.$socket.emit('tie', this.room_id);
+                setTimeout(this.restartWinner, 5000);
+            }
+
+
+        },
+        restartWinner(){
+            this.show = false;
+            this.ready = true;
+        },
+        restartLoser(){
+            this.show = false;
+            this.ready = true;
+        },
+        getData(user_id){
+            return this.emots[this.room.data[user_id]];
         }
     },
     data(){

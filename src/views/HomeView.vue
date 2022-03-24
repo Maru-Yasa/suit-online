@@ -1,28 +1,19 @@
 <template>
-  <div class="container">
+  <div class="">
+    <div class="row mt-5 justify-content-center">
 
-    <div class="row justify-content-center">
-
-      <div class="col-10 text-center">
-        <h1 class="text-success">SUIT ONLINE {{ $store.state.test }}</h1>
-      </div>
-
-      <div class="col-10">
-        <div class="mb-3 col-5">
-          <label for="username" class="form-label">Username :</label>
-          <input type="text" v-model="username" class="form-control" >
-        </div>
-        <div class="mb-3 col-5">
-          <label for="username" class="form-label">Room name :</label>
-          <input type="text" v-model="room_name" class="form-control" >
-        </div>
-        <div class="mb-3 col-5">
-          <input class="btn btn-secondary" type="button" value="Create room" @click="createRoom">
+      <div class="col-10 row justify-content-center">
+        <div class="col-12 col-md-6  rounded-lg border border-1 p-5">
+          <h2 class="mb-4">Make Room</h2>
+          <input type="text" class="form-control" v-model="username" placeholder="Username" required>
+          <br>
+          <input type="text" class="form-control" v-model="room_name" placeholder="Room name" required>
+          <br>
+          <a href="javascript:void(0)" @click="createRoom" class="btn btn-primary">Create Room</a>
         </div>
       </div>
 
     </div>
-
   </div>
 </template>
 
@@ -37,18 +28,28 @@ export default {
   },
   methods : {
     createRoom(){
-      this.$socket.emit('new_user', this.username);
-      let data = {
-        room_name:this.room_name, 
-      };
-      let url = process.env.VUE_APP_SOCKET_URL + "/room";
-      axios.post(url, data).then((res) => {
-        if(res.status == 200){
-          this.$router.push({
-              path:`/room/${res.data.room_id}?username=${this.username}`,
-            })
-        }
-      });
+      if(this.username == '' || this.room_name == ''){
+        this.$swal.fire({
+          icon:'error',
+          title:'oops..',
+          text:'username and password must be initialized'
+        });
+      }else{
+        this.$store.commit('setUsername', this.username);
+        this.$socket.emit('new_user', this.username);
+        let data = {
+          room_name:this.room_name, 
+        };
+        let url = process.env.VUE_APP_API_URL + "/room";
+        axios.post(url, data).then((res) => {
+          if(res.status == 200){
+            this.$router.push({
+                path:`/room/${res.data.room_id}`,
+              })
+          }
+        });
+      }
+
     },
   },
   data(){

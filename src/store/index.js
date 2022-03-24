@@ -6,10 +6,15 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
 
     state:{
-        test:"test"
+        username:"",
     },
     mutations:{
-
+        setUsername(state, username){
+            state.username = username;
+        },
+        deleteUsername(state){
+            state.username = '';
+        }
     },
 
 });
