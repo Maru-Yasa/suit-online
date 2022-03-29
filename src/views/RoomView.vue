@@ -3,15 +3,15 @@
 
         <div class="row justify-content-center">
 
-            <div class="col-12 mt-5 text-center">
-                <h1>
-                    
-                    {{ room_name }}
-                    <a @click="share()" class="h4 text-center" href="javascript:void(0">
-                        <b-icon icon="share-fill"></b-icon>
-                    </a>    
-                </h1> 
-
+            <div class="col-12 mt-5 row justify-content-center text-center">
+                <div class="col-12">
+                    <h1>
+                        {{ room_name }}  
+                        <button @click="share()" class="btn btn-primary rounded p-1 ">
+                            <b-icon icon="share-fill" class="m-1"></b-icon>
+                        </button>
+                    </h1> 
+                </div>
             </div>
 
             <div class="col-12 col-md-6 mt-5 mb-5 row justify-content-center">
@@ -312,12 +312,11 @@ export default {
         },
         share(){
             this.$swal.fire({
-                icon: 'success',
                 title: 'Share this room',
                 confirmButtonText:"ok",
                 html:`
                 
-                <canvas id='qrcode'></canvas>
+                <canvas id='qrcode' width='300'></canvas>
                 
                 `,
             });
