@@ -4,7 +4,14 @@
         <div class="row justify-content-center">
 
             <div class="col-12 mt-5 text-center">
-                <h1>{{ room_name }}</h1>
+                <h1>
+                    
+                    {{ room_name }}
+                    <a @click="share()" class="h4 text-center" href="javascript:void(0">
+                        <b-icon icon="share-fill"></b-icon>
+                    </a>    
+                </h1> 
+
             </div>
 
             <div class="col-12 col-md-6 mt-5 mb-5 row justify-content-center">
@@ -83,6 +90,7 @@
 </template>
 
 <script>
+import QRCode from 'qrcode'
 // 🤔 ✊ 🖐🤞
 export default {
     name:"RoomView",
@@ -155,7 +163,7 @@ export default {
                         opponent = users[key];
                     }
                 });
-                console.log(opponent);
+                // console.log(opponent);
                 return opponent;
             }
         }
@@ -199,10 +207,10 @@ export default {
             if(this.room['data_count'] == 2){
                 var self_data = this.room['data'][this.self.userId];
                 var opponent_data = this.room['data'][this.getOpponent.userId];
-                console.log({
-                    self_data,
-                    opponent_data
-                });
+                // console.log({
+                //     self_data,
+                //     opponent_data
+                // });
             }
 
             if(this.ready){
@@ -222,7 +230,7 @@ export default {
 
         },
         judge(data){
-            console.log(data);
+            // console.log(data);
             var self = this.self;
             var opponent = this.getOpponent;
             var win = null;
@@ -301,6 +309,19 @@ export default {
         },
         getData(user_id){
             return this.emots[this.room.data[user_id]];
+        },
+        share(){
+            this.$swal.fire({
+                icon: 'success',
+                title: 'Share this room',
+                confirmButtonText:"ok",
+                html:`
+                
+                <canvas id='qrcode'></canvas>
+                
+                `,
+            });
+            QRCode.toCanvas(document.getElementById('qrcode'), `${import.meta.env.VITE_APP_BASE_URL}/#/room/${this.room_id}`)
         }
     },
     data(){

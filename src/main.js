@@ -8,16 +8,17 @@ import VueSweetalert2 from 'vue-sweetalert2';
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'bootstrap-vue/dist/bootstrap-vue-icons.min.css'
 import 'sweetalert2/dist/sweetalert2.min.css';
 
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
-console.log(process.env.VUE_APP_SOCKET_URL);
+console.log(import.meta.env.VITE_APP_SOCKET_URL);
 Vue.use(new VueSocketIO({
     debug: true,
-    connection: process.env.VUE_APP_SOCKET_URL,
+    connection: import.meta.env.VITE_APP_SOCKET_URL,
 }))
 Vue.use(VueSweetalert2);
 
