@@ -40,7 +40,7 @@ export default {
         let data = {
           room_name:this.room_name, 
         };
-        let url = process.env.VUE_APP_API_URL + "/room";
+        let url = import.meta.env.VITE_APP_API_URL + "/room";
         axios.post(url, data).then((res) => {
           if(res.status == 200){
             this.$router.push({
@@ -56,7 +56,7 @@ export default {
     return {
       username :"",
       room_name:"",
-      api_url : process.env.VUE_APP_API_URL,
+      api_url : import.meta.env.VITE_APP_API_URL,
     }
   },
 }
